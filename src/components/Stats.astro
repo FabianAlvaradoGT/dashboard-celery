@@ -1,0 +1,28 @@
+---
+const stats = [
+  { name: 'Total Tasks', id: 'total', value: '0' },
+  { name: 'Running', id: 'running', value: '0' },
+  { name: 'Completed', id: 'completed', value: '0' },
+  { name: 'Pending', id: 'pending', value: '0' }
+]
+---
+
+<div>
+  <dl class="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-4">
+    {
+      stats.map((item) => (
+        <div class="px-4 py-5 bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden sm:p-6">
+          <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">
+            {item.name}
+          </dt>
+          <dd
+            id={item.id}
+            class="mt-1 text-3xl font-semibold text-gray-900 dark:text-white"
+          >
+            {item.value}
+          </dd>
+        </div>
+      ))
+    }
+  </dl>
+</div>

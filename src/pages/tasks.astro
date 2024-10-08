@@ -1,0 +1,72 @@
+---
+import Layout from '../layouts/Layout.astro'
+import Header from '../components/Header.astro'
+
+const apiUrl = import.meta.env.PUBLIC_API_URL
+---
+
+<Layout title="Available Tasks - Celery Dashboard">
+  <Header />
+  <main class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+    <div class="px-4 py-6 sm:px-0">
+      <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-4">
+        Available Tasks
+      </h2>
+      <div
+        class="bg-white dark:bg-gray-800 shadow overflow-hidden sm:rounded-md"
+      >
+        <ul
+          id="availableTasks"
+          class="divide-y divide-gray-200 dark:divide-gray-700"
+        >
+          <!-- Available tasks will be dynamically inserted here -->
+        </ul>
+      </div>
+    </div>
+  </main>
+</Layout>
+
+<script define:vars={{ apiUrl }}>
+  const loadAvailableTasks = async () => {
+    const response = await fetch(`${apiUrl}/tasks`)
+    const tasks = await response.json()
+    const taskList = document.getElementById('availableTasks')
+    if (taskList) {
+      taskList.innerHTML = tasks
+        .map(
+          (task) => `
+        <li>
+          <div class="px-4 py-4 sm:px-6 flex items-center justify-between">
+            <div>
+              <h3 class="text-lg font-medium text-gray-900 dark:text-white">${task.name}</h3>
+              <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Status: ${task.status}</p>
+            </div>
+            <button
+              class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded"
+              onclick="executeTask(${task.id})"
+            >
+              Execute
+            </button>
+          </div>
+        </li>
+      `
+        )
+        .join('')
+    }
+  }
+
+  const executeTask = async (taskId) => {
+    const response = await fetch(`${apiUrl}/tasks/${taskId}/execute`, {
+      method: 'POST'
+    })
+    const result = await response.json()
+    alert(result.message)
+    loadAvailableTasks()
+  }
+
+  // Load available tasks on page load
+  loadAvailableTasks()
+
+  // Refresh available tasks every 5 seconds
+  setInterval(loadAvailableTasks, 5000)
+</script>

@@ -1,0 +1,26 @@
+---
+const currentPath = Astro.url.pathname
+---
+
+<aside class="bg-gray-800 text-white w-64 min-h-screen p-4">
+  <nav>
+    <ul>
+      <li class="mb-2">
+        <a
+          href="/"
+          class={`block p-2 rounded ${currentPath === '/' ? 'bg-gray-700' : 'hover:bg-gray-700'}`}
+        >
+          Dashboard
+        </a>
+      </li>
+      <li class="mb-2">
+        <a
+          href="/tasks"
+          class={`block p-2 rounded ${currentPath === '/tasks' ? 'bg-gray-700' : 'hover:bg-gray-700'}`}
+        >
+          Tasks
+        </a>
+      </li>
+    </ul>
+  </nav>
+</aside>

@@ -1,0 +1,83 @@
+---
+import Layout from '../layouts/Layout.astro'
+import Header from '../components/Header.astro'
+import Stats from '../components/Stats.astro'
+import TaskList from '../components/TaskList.astro'
+
+const apiUrl = import.meta.env.PUBLIC_API_URL
+---
+
+<Layout title="Celery Dashboard">
+  <Header />
+  <main class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+    <div class="px-4 py-6 sm:px-0">
+      <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-4">
+        Overview
+      </h2>
+      <Stats />
+      <h2
+        class="text-2xl font-semibold text-gray-900 dark:text-white mt-8 mb-4"
+      >
+        Recent Tasks
+      </h2>
+      <TaskList />
+    </div>
+  </main>
+</Layout>
+
+<script define:vars={{ apiUrl }}>
+  const updateStats = async () => {
+    const response = await fetch(`${apiUrl}/stats`)
+    const stats = await response.json()
+    Object.entries(stats).forEach(([key, value]) => {
+      const element = document.getElementById(key)
+      if (element) {
+        element.textContent = value
+      }
+    })
+  }
+
+  const updateTasks = async () => {
+    const response = await fetch(`${apiUrl}/tasks`)
+    const tasks = await response.json()
+    const taskList = document.getElementById('taskList')
+    if (taskList) {
+      taskList.innerHTML = tasks
+        .map(
+          (task) => `
+        <li>
+          <div class="px-4 py-4 sm:px-6">
+            <div class="flex items-center justify-between">
+              <p class="text-sm font-medium text-indigo-600 dark:text-indigo-400 truncate">${task.name}</p>
+              <div class="ml-2 flex-shrink-0 flex">
+                <p class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100">
+                  ${task.status}
+                </p>
+              </div>
+            </div>
+            <div class="mt-2 sm:flex sm:justify-between">
+              <div class="sm:flex">
+                <p class="flex items-center text-sm text-gray-500 dark:text-gray-400">
+                  Progress: ${task.progress}%
+                </p>
+              </div>
+            </div>
+          </div>
+        </li>
+      `
+        )
+        .join('')
+    }
+  }
+
+  const updateData = () => {
+    updateStats()
+    updateTasks()
+  }
+
+  // Update data every 2 seconds
+  setInterval(updateData, 10000)
+
+  // Initial update
+  updateData()
+</script>
